@@ -1,10 +1,14 @@
 # Assessing the Value of XAI for MRI
 
+Companion repository for the paper *"Assessing the Value of Explainable Artificial Intelligence for Magnetic Resonance Imaging"* submitted to XAI2025.
+
 ## Overview
 
-This repository contains code for training, evaluating, and explaining an MRI image classification model using ResNet.
-The model is trained to classify MRI images as either "healthy" or "affected" using a variety of machine learning and
-explainability techniques, including GradCAM, SHAP, and occlusion-based methods.
+Recent Artificial Intelligence (AI) advancements have improved diagnostic accuracy in medical fields such as cancer detection and cardiovascular disease diagnosis. However, the lack of transparency in AI decision-making limits its adoption in clinical practice, where physicians require clear, interpretable explanations. eXplainable Artificial Intelligence (XAI) seeks to address this challenge by making AI predictions more understandable while ensuring compliance with ethical and legal frameworks such as GDPR and the AI Act.
+
+This repository implements multiple explainability techniques for a diagnostic support model focused on Distal Myopathies, a rare neuromuscular disorder characterized by subtle early-stage tissue alterations. Our approach extends beyond classification by generating detailed explanations for model predictions. Specifically, we introduce **novel techniques**, including a **hierarchical occlusion method** and an **ensemble framework** that combines individual explanations into refined, interpretable visualizations. Expert radiologists provide feedback on these methods, assessing their effectiveness in improving trust and usability in clinical settings. 
+
+This repository provides the code for training, evaluating, and explaining an MRI image classification model using ResNet. The model classifies MRI images as "healthy" or "affected" while incorporating multiple machine learning and explainability techniques, such as GradCAM, SHAP, and occlusion-based methods.
 
 ## Features
 
@@ -13,7 +17,8 @@ explainability techniques, including GradCAM, SHAP, and occlusion-based methods.
 - **Data Augmentation**: Includes Gaussian blur and color jitter transformations.
 - **Ensemble Methods**: Combines multiple explainability methods for model interpretation.
 - **SHAP and GradCAM explainability**: Uses SHAP values and GradCAM to visualize model decisions.
-- **Hierarchical occlusion analysis**: Identifies important image regions by systematically masking parts of the image.
+- **Hierarchical occlusion analysis (Novel Method)**: Identifies important image regions by systematically masking parts of the image.
+- **Ensemble Framework (Novel Method)**: Combines multiple explainability techniques to generate refined, interpretable visualizations.
 - **Evaluation Metrics**: Computes accuracy, precision, recall, and F1-score.
 - **Automatic Result Saving**: Stores model evaluation metrics in a JSON file.
 
@@ -61,8 +66,7 @@ pip install -r requirements.txt
 
 ### Running the Notebooks
 
-All training, evaluation, and explainability processes are handled through the Jupyter notebooks. Open and execute the
-following notebooks based on your needs:
+All training, evaluation, and explainability processes are handled through the Jupyter notebooks. Open and execute the following notebooks based on your needs:
 
 #### Train and Evaluate the Model
 
@@ -116,33 +120,10 @@ jupyter notebook notebooks/ensemble.ipynb
 
 - **SHAP Values**: Feature importance analysis using SHAP.
 - **GradCAM, GradCAM++, HiResCAM**: Visualizing CNN attention in MRI scans.
-- **Hierarchical Occlusion Analysis**: Identifying key regions in the MRI scans by occluding parts of the image.
-
-## Results
-
-After training, results are stored in:
-
-```
-src/models/final-resnet50v/results.json
-```
-
-Example output:
-
-```json
-{
-  "title": "final-resnet50v",
-  "learning rate": 0.001,
-  "momentum": 0.9,
-  "epochs": 50,
-  "final": {
-    "accuracy": 0.92,
-    "precision": 0.90,
-    "recall": 0.88,
-    "f1": 0.89
-  }
-}
-```
+- **Hierarchical Occlusion Analysis (Novel Method)**: Identifying key regions in the MRI scans by occluding parts of the image.
+- **Ensemble Framework (Novel Method)**: Combining multiple explainability techniques for refined and interpretable results.
 
 ## License
 
 This project is licensed under the MIT License.
+
