@@ -9,7 +9,7 @@ explainability techniques, including GradCAM, SHAP, and occlusion-based methods.
 ## Features
 
 - **Cross-validation**: Uses stratified group k-fold validation for robust model evaluation.
-- **ResNet50-based classification**: Implements ResNet50 as the primary model.
+- **ResNet-based classification**: Implements ResNet18 and ResNet50 as classification models.
 - **Data Augmentation**: Includes Gaussian blur and color jitter transformations.
 - **Ensemble Methods**: Combines multiple explainability methods for model interpretation.
 - **SHAP and GradCAM explainability**: Uses SHAP values and GradCAM to visualize model decisions.
@@ -23,17 +23,26 @@ explainability techniques, including GradCAM, SHAP, and occlusion-based methods.
 .
 ├── LICENSE
 ├── README.md
-├── cam-vs-occlusion.ipynb      # Notebook for comparing occlusion and GradCAM results
-├── ensemble.ipynb              # Notebook for ensemble explainability methods
-├── requirements.txt            # Required dependencies
+├── notebooks
+│   ├── cam-methods.ipynb      # Notebook for GradCAM, GradCAM++, and HiResCAM
+│   ├── ensemble.ipynb         # Notebook for ensemble explainability methods
+│   ├── occlusion.ipynb        # Notebook for occlusion-based explainability
+│   ├── shap.ipynb             # Notebook for SHAP-based explainability
+│   └── training.ipynb         # Notebook for model training and evaluation
+├── requirements.txt           # Required dependencies
 └── src
     ├── classes
-    │   ├── Dataset.py          # Dataset processing and augmentation
-    │   └── Models.py           # ResNet50 and ResNet18 model definitions
-    ├── config.py               # Configuration file for training settings
+    │   ├── cam.py             # CAM methods (GradCAM, GradCAM++, HiResCAM)
+    │   ├── dataset.py         # Dataset processing and augmentation
+    │   ├── ensemble.py        # Ensemble explainability algorithm
+    │   ├── models.py          # ResNet50 and ResNet18 model definitions
+    │   ├── occlusion.py       # Occlusion-based explainability
+    │   ├── shap.py            # SHAP explainability methods
+    │   └── training.py        # Training pipeline
+    ├── config.py              # Configuration file for training settings
     └── functions
-        ├── train_eval.py       # Training and evaluation pipeline
-        └── utils_train.py      # Utility functions (normalization, visualization, etc.)
+        ├── utils_ensemble.py  # Utility functions for ensemble methods
+        └── utils_train.py     # Utility functions (normalization, visualization, etc.)
 ```
 
 ## Installation
@@ -57,10 +66,34 @@ following notebooks based on your needs:
 
 #### Train and Evaluate the Model
 
+To train and evaluate the model:
+
+```sh
+jupyter notebook notebooks/training.ipynb
+```
+
+#### Generate SHAP Explanations
+
+To generate SHAP-based explainability results:
+
+```sh
+jupyter notebook notebooks/shap.ipynb
+```
+
+#### Generate CAM Explanations
+
+To generate GradCAM, GradCAM++, and HiResCAM results:
+
+```sh
+jupyter notebook notebooks/cam-methods.ipynb
+```
+
+#### Generate Occlusion-based Explanations
+
 To generate occlusion-based maps:
 
 ```sh
-jupyter notebook cam-vs-occlusion.ipynb
+jupyter notebook notebooks/occlusion.ipynb
 ```
 
 #### Generate Explainability Ensemble
@@ -68,7 +101,7 @@ jupyter notebook cam-vs-occlusion.ipynb
 To generate SHAP and CAM ensemble:
 
 ```sh
-jupyter notebook ensemble.ipynb
+jupyter notebook notebooks/ensemble.ipynb
 ```
 
 ## Model Training Details
@@ -82,7 +115,7 @@ jupyter notebook ensemble.ipynb
 ## Explainability Techniques
 
 - **SHAP Values**: Feature importance analysis using SHAP.
-- **GradCAM & GradCAM++**: Visualizing CNN attention in MRI scans.
+- **GradCAM, GradCAM++, HiResCAM**: Visualizing CNN attention in MRI scans.
 - **Hierarchical Occlusion Analysis**: Identifying key regions in the MRI scans by occluding parts of the image.
 
 ## Results
@@ -113,4 +146,3 @@ Example output:
 ## License
 
 This project is licensed under the MIT License.
-

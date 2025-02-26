@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -13,7 +13,6 @@ class MRIDataset(Dataset):
     def __init__(self, data, transform=None, target_transform=None):
         """
         Custom Dataset for MRI images and corresponding masks.
-
         :param data: List of tuples containing image paths and labels.
         :param transform: Transformation to apply to the images.
         :param target_transform: Transformation to apply to the labels.
@@ -30,28 +29,15 @@ class MRIDataset(Dataset):
 
         # Load grayscale image
         img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-        mask_path = os.path.join(PATH_TO_MASKS, img_path.split('\\')[-2], img_path.split('\\')[-1])
-        mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+
+        # Construct mask path
+        mask_path = Path(PATH_TO_MASKS) / img_path.split('\\')[-2] / img_path.split('\\')[-1]
+        mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
         mask = (mask > 0).astype(np.uint8)  # Convert mask to binary (0 or 1)
 
-        # Determine the larger side of the image
-        s = max(img.shape[:2])
-        s = max(s, 224)  # Ensure minimum size of 224
-
-        # Create a black square image
-        square_img = np.zeros((s, s), np.uint8)
-        ax, ay = (s - img.shape[1]) // 2, (s - img.shape[0]) // 2  # Centering position
-        square_img[ay:ay + img.shape[0], ax:ax + img.shape[1]] = img
-
-        # Determine the larger side of the mask
-        s = max(mask.shape[:2])
-        s = max(s, 224)  # Ensure minimum size of 224
-
-        # Create a black square mask
-        square_mask = np.zeros((s, s), np.uint8)
-        ax, ay = (s - mask.shape[1]) // 2, (s - mask.shape[0]) // 2  # Centering position
-        square_mask[ay:ay + mask.shape[0], ax:ax + mask.shape[1]] = mask
-        square_mask = (square_mask > 0).astype(np.uint8)  # Convert to binary (0-1)
+        # Pad image and mask to square shape
+        square_img = self.pad_to_square(img)
+        square_mask = self.pad_to_square(mask)
 
         if self.transform:
             square_img = self.transform(square_img)
@@ -60,12 +46,29 @@ class MRIDataset(Dataset):
 
         return square_img, label, square_mask
 
+    @staticmethod
+    def pad_to_square(img, target_size=224):
+        """
+        Pad image to a square of the larger side, ensuring a minimum size.
+        :param img: Input image
+        :param target_size: Minimum size for the image
+        :return: Padded square image
+        """
+        s = max(img.shape[:2])
+        s = max(s, target_size)  # Ensure minimum size of target_size
+
+        # Create a black square image
+        square_img = np.zeros((s, s), np.uint8)
+        ax, ay = (s - img.shape[1]) // 2, (s - img.shape[0]) // 2  # Centering position
+        square_img[ay:ay + img.shape[0], ax:ax + img.shape[1]] = img
+
+        return square_img
+
 
 class MRISubset(Dataset):
     def __init__(self, subset, train_bool=False, transform=None):
         """
         Subset of the MRI dataset with optional transformations and training-specific augmentations.
-
         :param subset: Subset of the dataset.
         :param train_bool: Flag indicating whether the subset is for training (enables augmentations).
         :param transform: Transformation to apply to the images.
@@ -82,11 +85,7 @@ class MRISubset(Dataset):
             x = self.transform(x)
 
         if self.train_bool:
-            if torch.rand(1) < 0.5:
-                hflip = transforms.RandomHorizontalFlip(p=1.0)  # Random horizontal flip (also applied to mask)
-                x = hflip(x * mask_tensor)
-            else:
-                x = x * mask_tensor
+            x = self.apply_data_augmentation(x, mask_tensor)
         else:
             x = x * mask_tensor
 
@@ -94,3 +93,19 @@ class MRISubset(Dataset):
 
     def __len__(self):
         return len(self.subset)
+
+    @staticmethod
+    def apply_data_augmentation(x, mask_tensor):
+        """
+        Apply data augmentation techniques for training.
+        :param x: Image tensor
+        :param mask_tensor: Mask tensor
+        :return: Augmented image tensor
+        """
+        if torch.rand(1) < 0.5:
+            hflip = transforms.RandomHorizontalFlip(p=1.0)  # Random horizontal flip (also applied to mask)
+            x = hflip(x * mask_tensor)
+        else:
+            x = x * mask_tensor
+
+        return x
