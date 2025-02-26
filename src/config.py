@@ -1,0 +1,5 @@
+PATH_TO_MASKS = r"C:\Users\frass\Desktop\Progetto tesi\Tiles\Tiles_mask_tif"
+PATH_TO_DATASET = r"C:\Users\frass\Desktop\Progetto tesi\Tiles\Tiles_tif_no_background"
+PATH_TO_DATASET_CSV = r"C:\Users\frass\Desktop\Progetto tesi\Tiles\dati.csv"
+PATH_TO_MODELS = r"C:\Users\frass\Desktop\Progetto tesi\Tiles"
+PATH_TO_OUTPUT = r"C:\Users\frass\Desktop\Progetto tesi\Tiles\Cam-explainability\Resnet18v"
